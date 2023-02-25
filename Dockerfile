@@ -6,7 +6,7 @@ ENV TZ=Europe/Moscow
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-ARG COMPOSER_VERSION="2.5.1"
+ARG COMPOSER_VERSION="2.5.4"
 
 RUN set -ex && \
     apt-get update && apt-get install -y \
