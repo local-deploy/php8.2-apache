@@ -14,6 +14,7 @@ RUN set -ex && \
         libjpeg62-turbo-dev \
         libpng-dev \
         libgmp-dev \
+        libwebp-dev \
         libxml2-dev \
         zlib1g-dev \
         libncurses5-dev \
@@ -41,7 +42,7 @@ RUN pecl install xdebug \
     && docker-php-ext-configure pdo_mysql --with-pdo-mysql=mysqlnd \
     && docker-php-ext-configure mysqli --with-mysqli=mysqlnd \
     && docker-php-ext-configure opcache --enable-opcache \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     && docker-php-ext-install -j$(nproc) mysqli pdo_mysql exif bcmath pcntl intl gmp mbstring gd soap zip opcache sockets
 
 RUN wget https://getcomposer.org/download/${COMPOSER_VERSION}/composer.phar -O /usr/local/bin/composer && \
