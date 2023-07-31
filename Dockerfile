@@ -4,53 +4,46 @@ LABEL maintainer="dl@varme.pw"
 
 ENV TZ=Europe/Moscow
 
+ARG COMPOSER_VERSION="2.5.8"
+ARG UID=1000
+ARG GID=1000
+
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-ARG COMPOSER_VERSION="2.5.4"
+RUN set -ex && apt-get update && apt-get install -y ssmtp wget git nano
 
-RUN set -ex && \
-    apt-get update && apt-get install -y \
-        libfreetype6-dev \
-        libjpeg62-turbo-dev \
-        libpng-dev \
-        libgmp-dev \
-        libwebp-dev \
-        libxml2-dev \
-        zlib1g-dev \
-        libncurses5-dev \
-        libldb-dev \
-        libldap2-dev \
-        libicu-dev \
-        libmemcached-dev \
-        libcurl4-openssl-dev \
-        libssl-dev \
-        libsqlite3-dev \
-        libzip-dev \
-        libonig-dev \
-        curl \
-        ssmtp \
-        wget \
-        git \
-        nano \
-        zip \
-        mariadb-client \
-    && rm -rf /var/lib/apt/lists/*
+COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 
-RUN pecl install xdebug \
-    && pecl install memcached \
-    && pecl install redis \
-    && docker-php-ext-configure pdo_mysql --with-pdo-mysql=mysqlnd \
-    && docker-php-ext-configure mysqli --with-mysqli=mysqlnd \
-    && docker-php-ext-configure opcache --enable-opcache \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
-    && docker-php-ext-install -j$(nproc) mysqli pdo_mysql exif bcmath pcntl intl gmp mbstring gd soap zip opcache sockets
+RUN  IPE_GD_WITHOUTAVIF=1 IPE_ICU_EN_ONLY=1 IPE_KEEP_SYSPKG_CACHE=1 install-php-extensions \
+     bcmath \
+     exif \
+     gd \
+     gmp \
+     imagick \
+     intl \
+     ldap \
+     mysqli \
+     opcache \
+     pcntl \
+     pdo_mysql \
+     pdo_pgsql \
+     pgsql \
+     soap \
+     sockets \
+     xdebug \
+     zip
 
-RUN wget https://getcomposer.org/download/${COMPOSER_VERSION}/composer.phar -O /usr/local/bin/composer && \
-    chmod a+rx /usr/local/bin/composer
+RUN  IPE_ICU_EN_ONLY=1 IPE_DONT_ENABLE=1 install-php-extensions \
+     memcache \
+     memcached \
+     redis \
+     xhprof
 
-RUN groupadd --gid 1000 1000 && \
-    usermod --non-unique --uid 1000 www-data && \
-    usermod --gid 1000 www-data
+RUN install-php-extensions @composer-${COMPOSER_VERSION}
+
+RUN groupadd --gid ${GID} ${GID} && \
+    usermod --non-unique --uid ${UID} www-data && \
+    usermod --gid ${GID} www-data
 
 RUN mkdir /var/www/.composer && \
     mkdir /var/www/.ssh
