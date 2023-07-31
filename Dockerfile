@@ -35,7 +35,6 @@ RUN  IPE_GD_WITHOUTAVIF=1 IPE_ICU_EN_ONLY=1 IPE_KEEP_SYSPKG_CACHE=1 install-php-
 
 RUN  IPE_ICU_EN_ONLY=1 IPE_DONT_ENABLE=1 install-php-extensions \
      memcache \
-     memcached \
      redis \
      xhprof
 
