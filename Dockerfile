@@ -10,7 +10,7 @@ ARG GID=1000
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-RUN set -ex && apt-get update && apt-get install -y ssmtp wget git nano
+RUN set -ex && apt-get update && apt-get install -y ssmtp wget git nano libmemcached-dev zlib1g-dev libssl-dev
 
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 
@@ -35,6 +35,7 @@ RUN  IPE_GD_WITHOUTAVIF=1 IPE_ICU_EN_ONLY=1 IPE_KEEP_SYSPKG_CACHE=1 install-php-
 
 RUN  IPE_ICU_EN_ONLY=1 IPE_DONT_ENABLE=1 install-php-extensions \
      memcache \
+     memcached \
      redis \
      xhprof
 
